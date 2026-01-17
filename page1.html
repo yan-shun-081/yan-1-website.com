@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>YAN_1 – Page 1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#020617;
+  --text:#e5e7eb;
+  --border:#334155;
+  --accent:#38bdf8;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui, sans-serif;
+}
+
+/* TOP BAR */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(2,6,23,.85);
+  backdrop-filter:blur(10px);
+  display:flex;
+  justify-content:flex-end;
+  padding:1rem;
+  border-bottom:1px solid var(--border);
+}
+
+.start-btn{
+  padding:.45rem 1.1rem;
+  background:var(--accent);
+  color:#020617;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+/* ITEM */
+.item{
+  margin-bottom:3rem;
+}
+
+/* FULL BLEED EMBED */
+.embed-wrap{
+  position:relative;
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+}
+
+.embed-wrap iframe{
+  width:100vw;
+  height:420px;
+  border:none;
+}
+
+/* FULLSCREEN ICON */
+.fullscreen{
+  position:absolute;
+  top:12px;
+  right:16px;
+  font-size:1.2rem;
+  cursor:pointer;
+  opacity:.7;
+  z-index:5;
+}
+.fullscreen:hover{opacity:1}
+
+/* TEXT CONTENT */
+.content{
+  max-width:900px;
+  margin:auto;
+  padding:1.4rem;
+  line-height:1.7;
+}
+
+.title{
+  font-size:1.2rem;
+  font-weight:600;
+  margin-bottom:.4rem;
+}
+
+.meta{
+  opacity:.85;
+  margin-bottom:.8rem;
+}
+
+/* BUTTON */
+.open-btn{
+  display:inline-block;
+  margin-top:.5rem;
+  padding:.5rem 1.2rem;
+  background:var(--accent);
+  color:#020617;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+/* FULLSCREEN OVERLAY */
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,.96);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+#overlay iframe{
+  width:100vw;
+  height:100vh;
+  border:none;
+}
+
+#close{
+  position:absolute;
+  top:10px;
+  right:14px;
+  font-size:1.2rem;
+  color:#fff;
+  opacity:.5;
+  cursor:pointer;
+}
+#close:hover{opacity:1}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="start-btn" onclick="openPage2()">Start</span>
+</div>
+
+<!-- CONTENT -->
+<div id="list"></div>
+
+<!-- FULLSCREEN -->
+<div id="overlay">
+  <span id="close" onclick="closeFS()">✕</span>
+  <iframe id="fsFrame"></iframe>
+</div>
+
+<script>
+fetch('data1.json')
+  .then(r => r.json())
+  .then(data => render(data));
+
+function embed(link){
+  if(!link || !link.includes('archive.org')) return '';
+  return 'https://archive.org/embed/' + link.split('/details/')[1];
+}
+
+function render(items){
+  const container = document.getElementById('list');
+
+  items.forEach(item=>{
+    const e = embed(item.archive_link);
+
+    container.innerHTML += `
+      <div class="item">
+        ${e ? `
+          <div class="embed-wrap">
+            <span class="fullscreen" onclick="openFS('${e}')">⛶</span>
+            <iframe src="${e}"></iframe>
+          </div>` : ``}
+
+        <div class="content">
+          <div class="title">${item.title}</div>
+          <div class="meta">
+            <strong>ID:</strong> ${item.id}<br>
+            <strong>Details:</strong> ${item.details}<br>
+            <strong>Others:</strong> ${item.others}
+          </div>
+          <span class="open-btn" onclick="openLink('${item.link1}')">Open</span>
+        </div>
+      </div>
+    `;
+  });
+}
+
+/* LINKS */
+function openLink(url){
+  window.open(url,'_blank');
+}
+
+/* FULLSCREEN */
+function openFS(url){
+  document.getElementById('fsFrame').src = url;
+  document.getElementById('overlay').style.display = 'flex';
+}
+function closeFS(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('fsFrame').src = '';
+}
+
+/* PAGE2 */
+function openPage2(){
+  location.href = 'page2.html';
+}
+
+/* ESC CLOSE */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeFS();
+});
+</script>
+
+</body>
+</html>
