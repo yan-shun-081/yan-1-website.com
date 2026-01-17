@@ -27,28 +27,44 @@ body{
   position:sticky;
   top:0;
   z-index:10;
-  background:rgba(2,6,23,.85);
+  background:rgba(2,6,23,.9);
   backdrop-filter:blur(10px);
-  display:flex;
-  justify-content:flex-end;
-  padding:1rem;
   border-bottom:1px solid var(--border);
+  padding:.8rem 1rem;
+  display:flex;
+  gap:.6rem;
+  align-items:center;
 }
 
-.start-btn{
-  padding:.45rem 1.1rem;
-  background:var(--accent);
-  color:#020617;
-  border-radius:10px;
+/* SEARCH */
+.search-input{
+  flex:1;
+  padding:.45rem .6rem;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:#020617;
+  color:var(--text);
+}
+.search-btn,.back-btn,.start-btn,.list-btn{
+  padding:.45rem 1rem;
+  border-radius:8px;
   font-weight:600;
   cursor:pointer;
-  text-decoration:none;
+  border:none;
 }
+.search-btn,.start-btn,.list-btn{
+  background:var(--accent);
+  color:#020617;
+}
+.back-btn{
+  background:#1e293b;
+  color:#e5e7eb;
+  display:none;
+}
+.start-btn{margin-left:auto}
 
 /* ITEM */
-.item{
-  margin-bottom:3rem;
-}
+.item{margin-bottom:3rem}
 
 /* FULL BLEED EMBED */
 .embed-wrap{
@@ -56,7 +72,6 @@ body{
   width:100vw;
   margin-left:calc(50% - 50vw);
 }
-
 .embed-wrap iframe{
   width:100vw;
   height:420px;
@@ -71,69 +86,71 @@ body{
   font-size:1.2rem;
   cursor:pointer;
   opacity:.7;
-  z-index:5;
 }
 .fullscreen:hover{opacity:1}
 
-/* TEXT CONTENT */
+/* CONTENT */
 .content{
   max-width:900px;
   margin:auto;
   padding:1.4rem;
   line-height:1.7;
 }
+.title{font-size:1.2rem;font-weight:600}
+.meta{opacity:.85;margin:.5rem 0}
 
-.title{
-  font-size:1.2rem;
-  font-weight:600;
-  margin-bottom:.4rem;
+/* ACTIONS */
+.actions{
+  display:flex;
+  gap:.8rem;
+  align-items:center;
 }
-
-.meta{
-  opacity:.85;
-  margin-bottom:.8rem;
-}
-
-/* BUTTON */
 .open-btn{
-  display:inline-block;
-  margin-top:.5rem;
-  padding:.5rem 1.2rem;
+  padding:.45rem 1.2rem;
   background:var(--accent);
   color:#020617;
   border-radius:10px;
   font-weight:600;
   cursor:pointer;
-  text-decoration:none;
 }
+.share-btn{
+  cursor:pointer;
+  font-size:1.2rem;
+  opacity:.75;
+}
+.share-btn:hover{opacity:1}
 
-/* FULLSCREEN OVERLAY */
-#overlay{
+/* LIST OVERLAY */
+#listOverlay{
   position:fixed;
   inset:0;
-  background:rgba(2,6,23,.96);
+  background:rgba(2,6,23,.97);
   display:none;
-  align-items:center;
-  justify-content:center;
+  flex-direction:column;
   z-index:9999;
 }
-
-#overlay iframe{
-  width:100vw;
-  height:100vh;
-  border:none;
-}
-
-#close{
+#listClose{
   position:absolute;
-  top:10px;
-  right:14px;
-  font-size:1.2rem;
-  color:#fff;
-  opacity:.5;
+  top:12px;
+  right:16px;
+  font-size:1.4rem;
+  opacity:.6;
   cursor:pointer;
 }
-#close:hover{opacity:1}
+#listClose:hover{opacity:1}
+#listContent{
+  padding:3rem 1.5rem 2rem;
+  overflow-y:auto;
+}
+.list-item{
+  margin-bottom:1.4rem;
+}
+.list-item a{
+  color:var(--accent);
+  text-decoration:none;
+  font-size:1.05rem;
+}
+.list-item a:hover{text-decoration:underline}
 </style>
 </head>
 
@@ -141,22 +158,32 @@ body{
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <span class="start-btn" onclick="openPage2()">Start</span>
+  <input id="searchInput" class="search-input" placeholder="Search by title…">
+  <button class="search-btn" onclick="search()">Search</button>
+  <button class="back-btn" id="backBtn" onclick="resetSearch()">Back</button>
+  <button class="start-btn" onclick="openPage2()">Start</button>
+  <button class="list-btn" onclick="openList()">List</button>
 </div>
 
-<!-- CONTENT -->
+<!-- ITEMS -->
 <div id="list"></div>
 
-<!-- FULLSCREEN -->
-<div id="overlay">
-  <span id="close" onclick="closeFS()">✕</span>
-  <iframe id="fsFrame"></iframe>
+<!-- LIST OVERLAY -->
+<div id="listOverlay">
+  <span id="listClose" onclick="closeList()">✕</span>
+  <div id="listContent"></div>
 </div>
 
 <script>
+let allData = [];
+
 fetch('data1.json')
   .then(r => r.json())
-  .then(data => render(data));
+  .then(data => {
+    allData = data;
+    render(data);
+    buildList(data);
+  });
 
 function embed(link){
   if(!link || !link.includes('archive.org')) return '';
@@ -165,6 +192,7 @@ function embed(link){
 
 function render(items){
   const container = document.getElementById('list');
+  container.innerHTML = '';
 
   items.forEach(item=>{
     const e = embed(item.archive_link);
@@ -172,10 +200,10 @@ function render(items){
     container.innerHTML += `
       <div class="item">
         ${e ? `
-          <div class="embed-wrap">
-            <span class="fullscreen" onclick="openFS('${e}')">⛶</span>
-            <iframe src="${e}"></iframe>
-          </div>` : ``}
+        <div class="embed-wrap">
+          <span class="fullscreen" onclick="realFullscreen(this)">⛶</span>
+          <iframe src="${e}" loading="lazy"></iframe>
+        </div>` : ``}
 
         <div class="content">
           <div class="title">${item.title}</div>
@@ -184,11 +212,46 @@ function render(items){
             <strong>Details:</strong> ${item.details}<br>
             <strong>Others:</strong> ${item.others}
           </div>
-          <span class="open-btn" onclick="openLink('${item.link1}')">Open</span>
+
+          <div class="actions">
+            <span class="open-btn" onclick="openLink('${item.link1}')">Open</span>
+            <span class="share-btn" onclick="shareLink('${item.link1}','${item.title}')">ᯓ➤</span>
+          </div>
         </div>
       </div>
     `;
   });
+}
+
+/* TRUE FULLSCREEN */
+function realFullscreen(btn){
+  const iframe = btn.nextElementSibling;
+  if(iframe.requestFullscreen){
+    iframe.requestFullscreen();
+  }
+}
+
+/* SEARCH */
+function search(){
+  const q = searchInput.value.trim().toLowerCase();
+  if(!q) return;
+  render(allData.filter(i=>i.title?.toLowerCase().includes(q)));
+  backBtn.style.display = 'inline-block';
+}
+function resetSearch(){
+  searchInput.value='';
+  backBtn.style.display='none';
+  render(allData);
+}
+
+/* SHARE */
+function shareLink(url,title){
+  if(navigator.share){
+    navigator.share({title,url});
+  }else{
+    navigator.clipboard.writeText(url);
+    alert('Link copied');
+  }
 }
 
 /* LINKS */
@@ -196,24 +259,36 @@ function openLink(url){
   window.open(url,'_blank');
 }
 
-/* FULLSCREEN */
-function openFS(url){
-  document.getElementById('fsFrame').src = url;
-  document.getElementById('overlay').style.display = 'flex';
-}
-function closeFS(){
-  document.getElementById('overlay').style.display = 'none';
-  document.getElementById('fsFrame').src = '';
-}
-
 /* PAGE2 */
 function openPage2(){
-  location.href = 'page2.html';
+  location.href='page2.html';
 }
 
-/* ESC CLOSE */
+/* LIST VIEW */
+function buildList(data){
+  listContent.innerHTML='';
+  data.forEach(i=>{
+    listContent.innerHTML+=`
+      <div class="list-item">
+        <div>${i.title}</div>
+        <a href="${i.link1}" target="_blank">${i.link1}</a>
+      </div>
+    `;
+  });
+}
+function openList(){
+  listOverlay.style.display='flex';
+}
+function closeList(){
+  listOverlay.style.display='none';
+}
+
+/* ESC */
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape') closeFS();
+  if(e.key==='Escape'){
+    closeList();
+    if(document.fullscreenElement) document.exitFullscreen();
+  }
 });
 </script>
 
