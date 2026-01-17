@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>YAN_1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#020617;
+  --card:#0f172a;
+  --border:#334155;
+  --text:#e5e7eb;
+  --accent:#38bdf8;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui, sans-serif;
+}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:2rem 1rem 1rem;
+}
+
+h1{
+  font-size:2.4rem;
+  margin:0;
+  letter-spacing:3px;
+}
+
+.tagline{
+  margin-top:.5rem;
+  font-size:1.1rem;
+  background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation: glow 4s infinite alternate;
+}
+
+@keyframes glow{
+  from{filter:drop-shadow(0 0 5px #38bdf8)}
+  to{filter:drop-shadow(0 0 20px #f472b6)}
+}
+
+/* MAIN */
+main{
+  max-width:900px;
+  margin:auto;
+  padding:1.5rem;
+}
+
+.card{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:1rem;
+  margin-bottom:1.5rem;
+}
+
+iframe{
+  width:100%;
+  height:360px;
+  border-radius:12px;
+  border:none;
+}
+
+/* FULLSCREEN ICON */
+.fullscreen{
+  position:absolute;
+  top:12px;
+  right:12px;
+  cursor:pointer;
+  font-size:1.2rem;
+  opacity:.75;
+}
+.fullscreen:hover{opacity:1}
+
+/* METADATA */
+.meta{
+  margin-top:1rem;
+  line-height:1.6;
+}
+
+/* BUTTON */
+.button{
+  margin-top:1rem;
+  display:inline-block;
+  padding:.6rem 1.2rem;
+  background:var(--accent);
+  color:#020617;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+/* NAV */
+.nav{
+  display:flex;
+  justify-content:center;
+  gap:3rem;
+  font-size:1.8rem;
+  margin:2rem 0;
+  cursor:pointer;
+}
+
+/* FOOTER */
+footer{
+  margin-top:3rem;
+  border-top:1px solid var(--border);
+  padding-top:2rem;
+}
+
+/* FULLSCREEN OVERLAY */
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,.85);
+  backdrop-filter:blur(10px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+#overlay iframe{
+  width:95vw;
+  height:95vh;
+  border-radius:14px;
+}
+
+#closeBtn{
+  position:absolute;
+  top:14px;
+  right:18px;
+  font-size:1.6rem;
+  color:#fff;
+  cursor:pointer;
+  opacity:.6;
+}
+#closeBtn:hover{opacity:1}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>YAN_1</h1>
+  <div class="tagline">Everything belongs here</div>
+</header>
+
+<main>
+
+  <div id="content"></div>
+
+  <div class="nav">
+    <span onclick="prevItem()">❮❮❮❮</span>
+    <span onclick="nextItem()">❯❯❯❯</span>
+  </div>
+
+  <!-- page1.html auto load -->
+  <footer>
+    <iframe src="page1.html" style="height:420px;"></iframe>
+  </footer>
+
+</main>
+
+<!-- FULLSCREEN OVERLAY -->
+<div id="overlay">
+  <div id="closeBtn" onclick="closeFullscreen()">✕</div>
+  <iframe id="overlayFrame"></iframe>
+</div>
+
+<script>
+let data = [];
+let index = 0;
+
+fetch('data.json')
+  .then(r => r.json())
+  .then(j => {
+    data = j;
+    render();
+  });
+
+function getEmbed(link){
+  if(!link.includes("archive.org")) return "";
+  return "https://archive.org/embed/" + link.split("/details/")[1];
+}
+
+function render(){
+  const item = data[index];
+  const embed = getEmbed(item.archive_link);
+
+  document.getElementById('content').innerHTML = `
+    <div class="card">
+      ${embed ? `
+        <div class="fullscreen" onclick="openFullscreen('${embed}')">⛶</div>
+        <iframe src="${embed}"></iframe>` : ``}
+
+      <div class="meta">
+        <strong>Details:</strong> ${item.details}<br>
+        <strong>Others:</strong> ${item.others}
+      </div>
+
+      <span class="button" onclick="openLink('${item.link1}')">Open</span>
+    </div>
+  `;
+}
+
+function openLink(url){
+  if(url.includes("archive.org")){
+    openFullscreen(url.replace('/details/','/embed/'));
+  } else {
+    window.open(url,'_blank');
+  }
+}
+
+/* FULLSCREEN LOGIC */
+function openFullscreen(url){
+  document.getElementById('overlayFrame').src = url;
+  document.getElementById('overlay').style.display = 'flex';
+}
+
+function closeFullscreen(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('overlayFrame').src = '';
+}
+
+/* NAVIGATION */
+function nextItem(){
+  index = (index + 1) % data.length;
+  render();
+}
+
+function prevItem(){
+  index = (index - 1 + data.length) % data.length;
+  render();
+}
+
+/* ESC KEY CLOSE */
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeFullscreen();
+});
+</script>
+
+</body>
+</html>

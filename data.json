@@ -1,0 +1,14 @@
+[
+  {
+    "archive_link": "https://archive.org/details/134114818147147310",
+    "details": "This is a sample archive item",
+    "others": "Extra metadata here",
+    "link1": "https://page-3-1.github.io/yan-1-website-educational-page/"
+  },
+  {
+    "archive_link": "https://archive.org/details/sides_202512",
+    "details": "Second item details",
+    "others": "More info",
+    "link1": "https://archive.org/details/sample_item_2"
+  }
+]
