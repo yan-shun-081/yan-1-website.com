@@ -28,6 +28,30 @@ header{
   padding:1.5rem 1rem;
 }
 
+.welcome-text {
+  background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.contact-link {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 1.3rem;
+  background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+}
+
 /* MAIN EMBED */
 .embed-wrap{
   position:relative;
@@ -120,9 +144,15 @@ header{
 
 <body>
 
-<header></header>
+<header>
+  <div class="welcome-text">Welcome — explore content designed to be simple, fast, and meaningful.</div>
+</header>
 
 <main id="content"></main>
+
+<div class="contact-link" onclick="window.open('https://more-webs.github.io/yan-1-website-weather-page/', '_blank')">
+  For advertisements or web & app development, contact us (click)
+</div>
 
 <!-- FULLSCREEN -->
 <div id="overlay">
