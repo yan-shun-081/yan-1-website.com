@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yan-shun-081.github.io/yan-1-website.com/sitemap.xml
