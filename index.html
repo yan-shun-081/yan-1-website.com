@@ -28,37 +28,41 @@ header{
   padding:2rem 1rem 1rem;
 }
 
-h1{
-  font-size:2.4rem;
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.8rem;
+  line-height:1; /* Fixed baseline alignment */
+}
+
+.brand img{
+  height:2.6rem;
+  width:auto;
+  display:block; /* Prevents inline quirks */
+  object-fit:contain;
+}
+
+.brand h1{
   margin:0;
+  line-height:1; /* Removes extra heading spacing */
+  font-size:2.4rem;
   letter-spacing:3px;
 }
 
 .tagline{
-  margin-top:.5rem;
+  margin-top:.6rem;
   font-size:1.1rem;
   background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation: glow 4s infinite alternate;
-}
-
-@keyframes glow{
-  from{filter:drop-shadow(0 0 5px #38bdf8)}
-  to{filter:drop-shadow(0 0 20px #f472b6)}
 }
 
 /* MAIN */
-main{
-  width:100%;
-}
-
-/* FULL BLEED EMBED */
 .embed-wrap{
   position:relative;
   width:100vw;
   margin-left:calc(50% - 50vw);
-  margin-right:calc(50% - 50vw);
 }
 
 .embed-wrap iframe{
@@ -67,199 +71,187 @@ main{
   border:none;
 }
 
-/* FULLSCREEN ICON */
+/* FULLSCREEN */
 .fullscreen{
   position:absolute;
   top:14px;
   right:18px;
-  cursor:pointer;
   font-size:1.2rem;
+  cursor:pointer;
   opacity:.75;
-  z-index:5;
 }
 .fullscreen:hover{opacity:1}
 
-/* CONTENT WRAP */
+/* CONTENT */
 .content-inner{
   max-width:900px;
   margin:auto;
   padding:1.5rem;
 }
 
-/* TEXT */
-.meta{
-  line-height:1.7;
-  margin-bottom:1rem;
+.meta{line-height:1.7;margin-bottom:1rem}
+
+.actions{
+  display:flex;
+  gap:1rem;
+  align-items:center;
 }
 
-/* BUTTON */
 .button{
-  display:inline-block;
   padding:.6rem 1.3rem;
   background:var(--accent);
   color:#020617;
   border-radius:12px;
   font-weight:600;
   cursor:pointer;
-  text-decoration:none;
 }
 
-/* NAV */
-.nav{
-  display:flex;
-  justify-content:center;
-  gap:3rem;
-  font-size:1.8rem;
-  margin:3rem 0;
+.share{
   cursor:pointer;
+  font-size:1.3rem;
   opacity:.75;
 }
-.nav span:hover{opacity:1}
+.share:hover{opacity:1}
 
-/* FOOTER — NO RESTRICTIONS */
-footer{
-  margin-top:3rem;
-  border-top:1px solid var(--border);
-}
-
-/* PAGE1 FULL FREEDOM */
+/* FOOTER PAGE */
 footer iframe{
   width:100%;
-  height:100vh;          /* full viewport height */
+  height:100vh;
   border:none;
-  display:block;
-  overflow:auto;         /* allow scrolling */
 }
 
 /* FULLSCREEN OVERLAY */
-#overlay{
+#overlay,#page4Overlay{
   position:fixed;
   inset:0;
   background:rgba(2,6,23,.95);
-  backdrop-filter:blur(12px);
   display:none;
-  align-items:center;
-  justify-content:center;
   z-index:9999;
 }
 
-#overlay iframe{
+#overlay iframe,
+#page4Overlay iframe{
   width:100vw;
   height:100vh;
   border:none;
 }
 
-#closeBtn{
+.close{
   position:absolute;
   top:14px;
   right:20px;
   font-size:1.6rem;
-  color:#fff;
   cursor:pointer;
-  opacity:.6;
   z-index:10000;
 }
-#closeBtn:hover{opacity:1}
+
+#page4Close{
+  color:#ef4444;
+}
 </style>
 </head>
 
 <body>
 
+<!-- PAGE4 POPUP -->
+<div id="page4Overlay">
+  <div id="page4Close" class="close" onclick="closePage4()">✕</div>
+  <iframe src="page4.html"></iframe>
+</div>
+
 <header>
-  <h1>YAN_1</h1>
-  <div class="tagline">Everything belongs here</div>
+  <div class="brand">
+    <img src="images/logo.png" alt="YAN_1"> <!-- Updated path -->
+    <h1>YAN_1</h1>
+  </div>
+  <div class="tagline">Where everything meets.</div>
 </header>
 
-<main>
+<main id="content"></main>
 
-  <div id="content"></div>
-
-  <div class="nav">
-    <span onclick="prevItem()">❮❮❮❮</span>
-    <span onclick="nextItem()">❯❯❯❯</span>
-  </div>
-
-  <!-- UNRESTRICTED PAGE -->
-  <footer>
-    <iframe src="page1.html" scrolling="yes"></iframe>
-  </footer>
-
-</main>
+<footer>
+  <iframe src="page1.html"></iframe>
+</footer>
 
 <!-- FULLSCREEN -->
 <div id="overlay">
-  <div id="closeBtn" onclick="closeFullscreen()">✕</div>
-  <iframe id="overlayFrame"></iframe>
+  <div class="close" onclick="exitFullscreen()">✕</div>
+  <iframe id="fsFrame"></iframe>
 </div>
 
 <script>
-let data = [];
-let index = 0;
+let data=[], index=0;
 
+/* PAGE4 AUTO OPEN */
+window.onload = () => {
+  document.getElementById('page4Overlay').style.display='block';
+};
+
+/* FETCH DATA */
 fetch('data.json')
-  .then(r => r.json())
-  .then(j => {
-    data = j;
-    render();
-  });
+  .then(r=>r.json())
+  .then(j=>{ data=j; render(); });
 
 function getEmbed(link){
-  if(!link || !link.includes("archive.org")) return "";
-  return "https://archive.org/embed/" + link.split("/details/")[1];
+  return link?.includes('archive.org')
+    ? 'https://archive.org/embed/'+link.split('/details/')[1]
+    : '';
 }
 
 function render(){
-  const item = data[index];
-  const embed = getEmbed(item.archive_link);
+  const i=data[index];
+  const e=getEmbed(i.archive_link);
 
-  document.getElementById('content').innerHTML = `
-    ${embed ? `
-      <div class="embed-wrap">
-        <div class="fullscreen" onclick="openFullscreen('${embed}')">⛶</div>
-        <iframe src="${embed}"></iframe>
-      </div>` : ``}
+  content.innerHTML=`
+    ${e?`
+    <div class="embed-wrap">
+      <span class="fullscreen" onclick="nativeFullscreen()">⛶</span>
+      <iframe id="embedFrame" src="${e}"></iframe>
+    </div>`:''}
 
     <div class="content-inner">
       <div class="meta">
-        <strong>Details:</strong> ${item.details}<br>
-        <strong>Others:</strong> ${item.others}
+        <strong>Details:</strong> ${i.details}<br>
+        <strong>Others:</strong> ${i.others}
       </div>
 
-      <span class="button" onclick="openLink('${item.link1}')">Open</span>
+      <div class="actions">
+        <span class="button" onclick="openLink('${i.link1}')">Open</span>
+        <span class="share" onclick="share('${i.link1}','YAN_1')">ᯓ➤</span>
+      </div>
     </div>
   `;
 }
 
-function openLink(url){
-  if(url.includes("archive.org")){
-    openFullscreen(url.replace('/details/','/embed/'));
-  } else {
-    window.open(url,'_blank');
+/* FULLSCREEN */
+function nativeFullscreen(){
+  document.getElementById('embedFrame')?.requestFullscreen();
+}
+function exitFullscreen(){
+  document.exitFullscreen?.();
+}
+
+/* SHARE */
+function share(url,title){
+  navigator.share
+    ? navigator.share({title,url})
+    : navigator.clipboard.writeText(url)&&alert('Link copied');
+}
+
+/* LINKS */
+function openLink(u){ window.open(u,'_blank'); }
+
+/* PAGE4 CLOSE */
+function closePage4(){
+  document.getElementById('page4Overlay').style.display='none';
+}
+
+/* ESC */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    exitFullscreen();
+    closePage4();
   }
-}
-
-function openFullscreen(url){
-  document.getElementById('overlayFrame').src = url;
-  document.getElementById('overlay').style.display = 'flex';
-}
-
-function closeFullscreen(){
-  document.getElementById('overlay').style.display = 'none';
-  document.getElementById('overlayFrame').src = '';
-}
-
-function nextItem(){
-  index = (index + 1) % data.length;
-  render();
-}
-
-function prevItem(){
-  index = (index - 1 + data.length) % data.length;
-  render();
-}
-
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape') closeFullscreen();
 });
 </script>
 

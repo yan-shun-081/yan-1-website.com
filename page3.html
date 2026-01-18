@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Metadata Viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#020617;
+  --text:#e5e7eb;
+  --accent:#38bdf8;
+  --muted:#94a3b8;
+  --border:#334155;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* FULL WIDTH FLOW */
+#output{
+  width:100%;
+}
+
+/* TITLE */
+.title{
+  font-size:2.2rem;
+  font-weight:600;
+  padding:2.5rem 1.25rem 2rem;
+  background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* METADATA */
+.meta-item{
+  padding:1.25rem;
+  border-bottom:1px solid var(--border);
+  font-size:1.05rem;
+  line-height:1.6;
+}
+
+/* remove top border gap */
+.meta-item:first-of-type{
+  border-top:1px solid var(--border);
+}
+
+.meta-key{
+  color:var(--muted);
+  font-size:.8rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.meta-value{
+  margin-top:.35rem;
+}
+
+/* CLICKABLE */
+.meta-link{
+  color:var(--accent);
+  text-decoration:none;
+}
+.meta-link:hover{
+  text-decoration:underline;
+}
+</style>
+</head>
+
+<body>
+
+<div id="output"></div>
+
+<script>
+fetch('data3.json')
+  .then(res => res.json())
+  .then(data => {
+    const items = Array.isArray(data) ? data : [data];
+    renderAll(items);
+  })
+  .catch(err=>{
+    document.getElementById('output').innerHTML =
+      '<p style="color:#f87171;padding:1.25rem">Failed to load metadata</p>';
+    console.error(err);
+  });
+
+function renderAll(list){
+  const out = document.getElementById('output');
+  out.innerHTML = '';
+
+  list.forEach(meta => {
+
+    /* TITLE */
+    if(meta.title){
+      out.innerHTML += `
+        <div class="title">${escapeHTML(meta.title)}</div>
+      `;
+    }
+
+    /* METADATA */
+    Object.keys(meta).forEach(key=>{
+      if(key === 'title') return;
+
+      const raw = String(meta[key]);
+
+      if(raw.includes('||')){
+        const [label, url] = raw.split('||');
+        out.innerHTML += `
+          <div class="meta-item">
+            <div class="meta-key">${escapeHTML(key)}</div>
+            <div class="meta-value">
+              <a class="meta-link" href="${url.trim()}" target="_blank">
+                ${escapeHTML(label.trim())}
+              </a>
+            </div>
+          </div>
+        `;
+      } else {
+        out.innerHTML += `
+          <div class="meta-item">
+            <div class="meta-key">${escapeHTML(key)}</div>
+            <div class="meta-value">${escapeHTML(raw)}</div>
+          </div>
+        `;
+      }
+    });
+
+  });
+}
+
+/* XSS protection */
+function escapeHTML(str){
+  return str.replace(/[&<>"']/g, m => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[m]));
+}
+</script>
+
+</body>
+</html>

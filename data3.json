@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Project Aurora",
+    "description": "A unified archive platform",
+    "te": "Official Site||https://example.com",
+    "channel": "Updates||https://t.me/example",
+    "note": "Experimental build"
+  },
+  {
+    "title": "Project 1",
+    "description": "A unified archive platform",
+    "website": "Official Site||https://example.com",
+    "channel": "Updates||https://t.me/example",
+    "e": "Experimental build",
+    "tata": "hellbss"
+  }
+]

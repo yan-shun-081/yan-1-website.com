@@ -150,7 +150,14 @@ body{
   text-decoration:none;
   font-size:1.05rem;
 }
-.list-item a:hover{text-decoration:underline}
+
+/* PAGE 3 – UNRESTRICTED */
+#page3Frame{
+  display:block;
+  width:100vw;
+  min-height:100vh;
+  border:none;
+}
 </style>
 </head>
 
@@ -167,6 +174,14 @@ body{
 
 <!-- ITEMS -->
 <div id="list"></div>
+
+<!-- PAGE 3 (FREE FLOW) -->
+<iframe
+  id="page3Frame"
+  src="page3.html"
+  scrolling="yes"
+  loading="lazy">
+</iframe>
 
 <!-- LIST OVERLAY -->
 <div id="listOverlay">
@@ -209,8 +224,7 @@ function render(items){
           <div class="title">${item.title}</div>
           <div class="meta">
             <strong>ID:</strong> ${item.id}<br>
-            <strong>Details:</strong> ${item.details}<br>
-            <strong>Others:</strong> ${item.others}
+            <strong>Details:</strong> ${item.details}
           </div>
 
           <div class="actions">
@@ -223,12 +237,10 @@ function render(items){
   });
 }
 
-/* TRUE FULLSCREEN */
+/* FULLSCREEN */
 function realFullscreen(btn){
   const iframe = btn.nextElementSibling;
-  if(iframe.requestFullscreen){
-    iframe.requestFullscreen();
-  }
+  iframe.requestFullscreen?.();
 }
 
 /* SEARCH */
@@ -236,22 +248,12 @@ function search(){
   const q = searchInput.value.trim().toLowerCase();
   if(!q) return;
   render(allData.filter(i=>i.title?.toLowerCase().includes(q)));
-  backBtn.style.display = 'inline-block';
+  backBtn.style.display='inline-block';
 }
 function resetSearch(){
   searchInput.value='';
   backBtn.style.display='none';
   render(allData);
-}
-
-/* SHARE */
-function shareLink(url,title){
-  if(navigator.share){
-    navigator.share({title,url});
-  }else{
-    navigator.clipboard.writeText(url);
-    alert('Link copied');
-  }
 }
 
 /* LINKS */
@@ -264,7 +266,7 @@ function openPage2(){
   location.href='page2.html';
 }
 
-/* LIST VIEW */
+/* LIST */
 function buildList(data){
   listContent.innerHTML='';
   data.forEach(i=>{
@@ -276,18 +278,14 @@ function buildList(data){
     `;
   });
 }
-function openList(){
-  listOverlay.style.display='flex';
-}
-function closeList(){
-  listOverlay.style.display='none';
-}
+function openList(){ listOverlay.style.display='flex'; }
+function closeList(){ listOverlay.style.display='none'; }
 
 /* ESC */
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     closeList();
-    if(document.fullscreenElement) document.exitFullscreen();
+    document.fullscreenElement && document.exitFullscreen();
   }
 });
 </script>

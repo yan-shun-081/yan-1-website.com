@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Page 2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#020617;
+  --card:#020617;
+  --border:#334155;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --accent:#38bdf8;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,sans-serif;
+}
+
+/* ITEM */
+.item{
+  margin-bottom:4rem;
+}
+
+/* FULL BLEED EMBED */
+.embed-wrap{
+  position:relative;
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+}
+
+.embed-wrap iframe{
+  width:100vw;
+  height:420px;
+  border:none;
+}
+
+/* FULLSCREEN ICON */
+.fullscreen{
+  position:absolute;
+  top:14px;
+  right:18px;
+  font-size:1.3rem;
+  cursor:pointer;
+  opacity:.75;
+  z-index:10;
+}
+.fullscreen:hover{opacity:1}
+
+/* CONTENT */
+.content{
+  max-width:900px;
+  margin:auto;
+  padding:1.5rem;
+}
+
+.title{
+  font-size:1.4rem;
+  font-weight:700;
+}
+
+.meta{
+  margin-top:.4rem;
+  font-size:.9rem;
+  color:var(--muted);
+}
+
+.details{
+  margin-top:.8rem;
+  line-height:1.6;
+}
+
+/* ACTIONS */
+.actions{
+  display:flex;
+  gap:1.5rem;
+  margin-top:1rem;
+  font-size:1.6rem;
+}
+
+.actions span{
+  cursor:pointer;
+  opacity:.75;
+}
+.actions span:hover{opacity:1}
+</style>
+</head>
+
+<body>
+
+<div id="container"></div>
+
+<script>
+fetch('data2.json')
+  .then(r => r.json())
+  .then(data => {
+    const container = document.getElementById('container');
+
+    data.forEach(item => {
+      const embed = item.archive_link?.includes('archive.org/details/')
+        ? 'https://archive.org/embed/' + item.archive_link.split('/details/')[1]
+        : '';
+
+      const block = document.createElement('div');
+      block.className = 'item';
+
+      block.innerHTML = `
+        ${embed ? `
+        <div class="embed-wrap">
+          <div class="fullscreen">⛶</div>
+          <iframe src="${embed}" loading="lazy"></iframe>
+        </div>` : ''}
+
+        <div class="content">
+          <div class="title">${item.title}</div>
+          <div class="meta">ID: ${item.id}</div>
+          <div class="details">${item.details}</div>
+
+          <div class="actions">
+            <span title="Open link 1">🌱</span>
+            <span title="Open link 2">📢</span>
+          </div>
+        </div>
+      `;
+
+      /* ACTION HANDLERS */
+      block.querySelector('.actions span:nth-child(1)')
+        .onclick = () => window.open(item.link1,'_blank');
+
+      block.querySelector('.actions span:nth-child(2)')
+        .onclick = () => window.open(item.link2,'_blank');
+
+      /* FULLSCREEN API */
+      const iframe = block.querySelector('iframe');
+      const fsBtn = block.querySelector('.fullscreen');
+
+      if(iframe && fsBtn){
+        fsBtn.onclick = () => {
+          if(iframe.requestFullscreen) iframe.requestFullscreen();
+          else if(iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+          else if(iframe.msRequestFullscreen) iframe.msRequestFullscreen();
+        };
+      }
+
+      container.appendChild(block);
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "001",
+    "title": "Sample Title",
+    "details": "Some description here",
+    "archive_link": "https://archive.org/details/xxxxx",
+    "link1": "https://example.com/one",
+    "link2": "https://example.com/two"
+  }
+]

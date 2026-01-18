@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Archive Viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#020617;
+  --border:#334155;
+  --text:#e5e7eb;
+  --accent:#38bdf8;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui, sans-serif;
+}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:1.5rem 1rem;
+}
+
+/* MAIN EMBED */
+.embed-wrap{
+  position:relative;
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+}
+
+.embed-wrap iframe{
+  width:100vw;
+  height:420px;
+  border:none;
+}
+
+/* FULLSCREEN ICON */
+.fullscreen{
+  position:absolute;
+  top:14px;
+  right:18px;
+  font-size:1.2rem;
+  cursor:pointer;
+  opacity:.75;
+}
+.fullscreen:hover{opacity:1}
+
+/* CONTENT */
+.content-inner{
+  max-width:900px;
+  margin:auto;
+  padding:1.5rem;
+}
+
+.title{
+  font-size:1.6rem;
+  font-weight:600;
+  margin-bottom:.8rem;
+}
+
+.meta{
+  line-height:1.7;
+  margin-bottom:1.2rem;
+}
+
+.actions{
+  display:flex;
+  gap:1rem;
+  align-items:center;
+}
+
+.button{
+  padding:.6rem 1.3rem;
+  background:var(--accent);
+  color:#020617;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.share{
+  cursor:pointer;
+  font-size:1.3rem;
+  opacity:.75;
+}
+.share:hover{opacity:1}
+
+/* FULLSCREEN OVERLAY */
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,.95);
+  display:none;
+  z-index:9999;
+}
+
+#overlay iframe{
+  width:100vw;
+  height:100vh;
+  border:none;
+}
+
+.close{
+  position:absolute;
+  top:14px;
+  right:20px;
+  font-size:1.6rem;
+  cursor:pointer;
+  z-index:10000;
+}
+</style>
+</head>
+
+<body>
+
+<header></header>
+
+<main id="content"></main>
+
+<!-- FULLSCREEN -->
+<div id="overlay">
+  <div class="close" onclick="exitFullscreen()">✕</div>
+  <iframe id="fsFrame"></iframe>
+</div>
+
+<script>
+let data=[], index=0;
+
+/* FETCH data4.json */
+fetch('data4.json')
+  .then(r=>r.json())
+  .then(j=>{
+    data=j;
+    render();
+  });
+
+function getEmbed(link){
+  return link?.includes('archive.org')
+    ? 'https://archive.org/embed/' + link.split('/details/')[1]
+    : '';
+}
+
+function render(){
+  const i=data[index];
+  const e=getEmbed(i.archive_link);
+
+  content.innerHTML=`
+    ${e?`
+    <div class="embed-wrap">
+      <span class="fullscreen" onclick="nativeFullscreen()">⛶</span>
+      <iframe id="embedFrame" src="${e}"></iframe>
+    </div>`:''}
+
+    <div class="content-inner">
+      <div class="title">${i.title || ''}</div>
+
+      <div class="meta">
+        <strong>Details:</strong> ${i.details || ''}<br>
+        <strong>Others:</strong> ${i.others || ''}
+      </div>
+
+      <div class="actions">
+        <span class="button" onclick="openLink('${i.link1}')">Open</span>
+        <span class="share" onclick="share('${i.link1}', '${i.title || ''}')">ᯓ➤</span>
+      </div>
+    </div>
+  `;
+}
+
+/* FULLSCREEN */
+function nativeFullscreen(){
+  document.getElementById('embedFrame')?.requestFullscreen();
+}
+function exitFullscreen(){
+  document.exitFullscreen?.();
+}
+
+/* SHARE */
+function share(url,title){
+  navigator.share
+    ? navigator.share({title,url})
+    : navigator.clipboard.writeText(url)&&alert('Link copied');
+}
+
+/* OPEN LINK */
+function openLink(u){
+  window.open(u,'_blank');
+}
+
+/* ESC KEY */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    exitFullscreen();
+  }
+});
+</script>
+
+</body>
+</html>
