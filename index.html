@@ -5,6 +5,17 @@
 <title>YAN_1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- OneSignal Push Notifications -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "7998d24d-4c7b-411b-a1a2-6658217b3b7b",
+    });
+  });
+</script>
+
 <style>
 :root{
   --bg:#020617;
@@ -41,6 +52,7 @@ header{
   width:auto;
   display:block; /* Prevents inline quirks */
   object-fit:contain;
+  cursor: pointer;
 }
 
 .brand h1{
@@ -48,6 +60,7 @@ header{
   line-height:1; /* Removes extra heading spacing */
   font-size:2.4rem;
   letter-spacing:3px;
+  cursor: pointer;
 }
 
 .tagline{
@@ -113,6 +126,18 @@ header{
 }
 .share:hover{opacity:1}
 
+/* NAVIGATION */
+.nav{
+  display:flex;
+  justify-content:center;
+  gap:3rem;
+  font-size:1.8rem;
+  margin:3rem 0;
+  cursor:pointer;
+  opacity:.75;
+}
+.nav span:hover{opacity:1}
+
 /* FOOTER PAGE */
 footer iframe{
   width:100%;
@@ -146,7 +171,9 @@ footer iframe{
 }
 
 #page4Close{
-  color:#ef4444;
+  color:#ef4444; /* Dark Red */
+  font-weight:bold;
+  text-shadow: 0 0 6px rgba(239,68,68,0.6); /* Glowing effect */
 }
 </style>
 </head>
@@ -161,13 +188,19 @@ footer iframe{
 
 <header>
   <div class="brand">
-    <img src="images/logo.png" alt="YAN_1"> <!-- Updated path -->
-    <h1>YAN_1</h1>
+    <img src="images/logo.png" alt="YAN_1" onclick="openLogoFullscreen()"> <!-- Made Clickable -->
+    <h1 onclick="openLogoFullscreen()">YAN_1</h1> <!-- Also clickable -->
   </div>
   <div class="tagline">Where everything meets.</div>
 </header>
 
 <main id="content"></main>
+
+<!-- NAVIGATION CONTROLS -->
+<div class="nav">
+  <span onclick="prevItem()">❮❮❮❮</span>
+  <span onclick="nextItem()">❯❯❯❯</span>
+</div>
 
 <footer>
   <iframe src="page1.html"></iframe>
@@ -244,6 +277,25 @@ function openLink(u){ window.open(u,'_blank'); }
 /* PAGE4 CLOSE */
 function closePage4(){
   document.getElementById('page4Overlay').style.display='none';
+}
+
+/* NAVIGATION LOGIC */
+function nextItem(){
+  index = (index + 1) % data.length;
+  render();
+}
+
+function prevItem(){
+  index = (index - 1 + data.length) % data.length;
+  render();
+}
+
+/* LOGO FULLSCREEN */
+function openLogoFullscreen(){
+  const overlay = document.getElementById('overlay');
+  const frame = document.getElementById('fsFrame');
+  frame.src = "images/logo.png"; // Or point to actual full-screen image/video
+  overlay.style.display = 'flex';
 }
 
 /* ESC */
