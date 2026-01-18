@@ -52,7 +52,7 @@ header{
   width:auto;
   display:block; /* Prevents inline quirks */
   object-fit:contain;
-  cursor: pointer;
+  /* Removed cursor pointer and click handlers */
 }
 
 .brand h1{
@@ -60,7 +60,7 @@ header{
   line-height:1; /* Removes extra heading spacing */
   font-size:2.4rem;
   letter-spacing:3px;
-  cursor: pointer;
+  /* Removed cursor pointer and click handlers */
 }
 
 .tagline{
@@ -132,11 +132,31 @@ header{
   justify-content:center;
   gap:3rem;
   font-size:1.8rem;
-  margin:3rem 0;
+  margin:2rem 0;
   cursor:pointer;
   opacity:.75;
 }
 .nav span:hover{opacity:1}
+
+/* Auto-scroll controls */
+.auto-scroll-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0 1rem 0;
+  color: var(--text);
+}
+
+.toggle-button {
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: #020617;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
 
 /* FOOTER PAGE */
 footer iframe{
@@ -168,13 +188,24 @@ footer iframe{
   font-size:1.6rem;
   cursor:pointer;
   z-index:10000;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #7f1d1d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(239,68,68,0.8);
 }
 
-#page4Close{
-  color:#ef4444; /* Dark Red */
-  font-weight:bold;
-  text-shadow: 0 0 6px rgba(239,68,68,0.6); /* Glowing effect */
+#page4Close {
+  /* Inherits styles from .close but with specific positioning */
+  top: 20px;
+  right: 20px;
 }
+
 </style>
 </head>
 
@@ -188,13 +219,18 @@ footer iframe{
 
 <header>
   <div class="brand">
-    <img src="images/logo.png" alt="YAN_1" onclick="openLogoFullscreen()"> <!-- Made Clickable -->
-    <h1 onclick="openLogoFullscreen()">YAN_1</h1> <!-- Also clickable -->
+    <img src="images/logo.png" alt="YAN_1"> <!-- Removed onclick handler -->
+    <h1>YAN_1</h1> <!-- Removed onclick handler -->
   </div>
   <div class="tagline">Where everything meets.</div>
 </header>
 
 <main id="content"></main>
+
+<!-- Auto-scroll toggle -->
+<div class="auto-scroll-controls">
+  <button id="toggleAutoScroll" class="toggle-button">Auto Scroll: ON</button>
+</div>
 
 <!-- NAVIGATION CONTROLS -->
 <div class="nav">
@@ -214,10 +250,15 @@ footer iframe{
 
 <script>
 let data=[], index=0;
+let autoScrollInterval;
+let isAutoScrolling = true; // Start with auto-scroll enabled
 
 /* PAGE4 AUTO OPEN */
 window.onload = () => {
   document.getElementById('page4Overlay').style.display='block';
+  
+  // Start auto-scroll when page loads
+  startAutoScroll();
 };
 
 /* FETCH DATA */
@@ -289,6 +330,32 @@ function prevItem(){
   index = (index - 1 + data.length) % data.length;
   render();
 }
+
+/* AUTO SCROLL FUNCTIONALITY */
+function startAutoScroll() {
+  autoScrollInterval = setInterval(() => {
+    nextItem();
+  }, 5000);
+}
+
+function toggleAutoScroll() {
+  const button = document.getElementById('toggleAutoScroll');
+  
+  if (isAutoScrolling) {
+    // Turn off auto scroll
+    clearInterval(autoScrollInterval);
+    isAutoScrolling = false;
+    button.textContent = 'Auto Scroll: OFF';
+  } else {
+    // Turn on auto scroll
+    startAutoScroll();
+    isAutoScrolling = true;
+    button.textContent = 'Auto Scroll: ON';
+  }
+}
+
+// Add event listener to the toggle button
+document.getElementById('toggleAutoScroll').addEventListener('click', toggleAutoScroll);
 
 /* LOGO FULLSCREEN */
 function openLogoFullscreen(){
