@@ -98,6 +98,7 @@ header{
   display:flex;
   gap:1rem;
   align-items:center;
+  flex-wrap: wrap;
 }
 
 .button{
@@ -107,6 +108,9 @@ header{
   border-radius:12px;
   font-weight:600;
   cursor:pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin: 0.3rem;
 }
 
 .share{
@@ -138,6 +142,41 @@ header{
   font-size:1.6rem;
   cursor:pointer;
   z-index:10000;
+}
+
+/* METADATA DISPLAY */
+.metadata-section {
+  background: rgba(56, 189, 248, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.metadata-section h3 {
+  margin-top: 0;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.metadata-item {
+  margin: 0.8rem 0;
+}
+
+.metadata-label {
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.metadata-value {
+  margin-left: 0.5rem;
+}
+
+.links-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 </style>
 </head>
@@ -177,9 +216,59 @@ function getEmbed(link){
     : '';
 }
 
-function render(){
+// Function to fetch metadata from Archive.org
+async function fetchMetadata(identifier) {
+  try {
+    const response = await fetch(`https://archive.org/metadata/${identifier}`);
+    const metadata = await response.json();
+    
+    // Extract relevant information
+    const title = metadata.metadata?.title || 'N/A';
+    const description = metadata.metadata?.description || 'N/A';
+    const tags = metadata.metadata?.subject || [];
+    const phone = metadata.metadata?.phone || 'N/A';
+    const email = metadata.metadata?.email || 'N/A';
+    const link1 = metadata.metadata?.link1 || null;
+    const link2 = metadata.metadata?.link2 || null;
+    const link3 = metadata.metadata?.link3 || null;
+    
+    // Format tags as a comma-separated string
+    const formattedTags = Array.isArray(tags) ? tags.join(', ') : tags;
+    
+    return {
+      title,
+      description,
+      tags: formattedTags,
+      phone,
+      email,
+      link1,
+      link2,
+      link3
+    };
+  } catch (error) {
+    console.error('Error fetching metadata:', error);
+    return {
+      title: 'N/A',
+      description: 'N/A',
+      tags: 'N/A',
+      phone: 'N/A',
+      email: 'N/A',
+      link1: null,
+      link2: null,
+      link3: null
+    };
+  }
+}
+
+async function render(){
   const i=data[index];
   const e=getEmbed(i.archive_link);
+  
+  // Extract identifier from archive_link
+  const identifier = i.archive_link.split('/details/')[1];
+  
+  // Fetch metadata
+  const metadata = await fetchMetadata(identifier);
 
   content.innerHTML=`
     ${e?`
@@ -189,16 +278,23 @@ function render(){
     </div>`:''}
 
     <div class="content-inner">
-      <div class="title">${i.title || ''}</div>
-
-      <div class="meta">
-        <strong>Details:</strong> ${i.details || ''}<br>
-        <strong>Others:</strong> ${i.others || ''}
-      </div>
-
-      <div class="actions">
-        <span class="button" onclick="openLink('${i.link1}')">Open</span>
-        <span class="share" onclick="share('${i.link1}', '${i.title || ''}')">ᯓ➤</span>
+      <div class="metadata-section">
+        <h3>Item Information</h3>
+        ${metadata.title !== 'N/A' ? `<div class="metadata-item"><span class="metadata-label">Title:</span><span class="metadata-value">${metadata.title}</span></div>` : ''}
+        ${metadata.description !== 'N/A' ? `<div class="metadata-item"><span class="metadata-label">Description:</span><span class="metadata-value">${metadata.description}</span></div>` : ''}
+        ${metadata.tags !== 'N/A' && metadata.tags ? `<div class="metadata-item"><span class="metadata-label">Tags:</span><span class="metadata-value">${metadata.tags}</span></div>` : ''}
+        ${metadata.phone !== 'N/A' ? `<div class="metadata-item"><span class="metadata-label">Phone:</span><span class="metadata-value">${metadata.phone}</span></div>` : ''}
+        ${metadata.email !== 'N/A' ? `<div class="metadata-item"><span class="metadata-label">Email:</span><span class="metadata-value">${metadata.email}</span></div>` : ''}
+        
+        ${(metadata.link1 || metadata.link2 || metadata.link3) ? 
+          `<div class="metadata-item">
+            <span class="metadata-label">Links:</span>
+            <div class="links-container">
+              ${metadata.link1 ? `<a href="${metadata.link1}" target="_blank" class="button">Link 1</a>` : ''}
+              ${metadata.link2 ? `<a href="${metadata.link2}" target="_blank" class="button">Link 2</a>` : ''}
+              ${metadata.link3 ? `<a href="${metadata.link3}" target="_blank" class="button">Link 3</a>` : ''}
+            </div>
+          </div>` : ''}
       </div>
     </div>
   `;
@@ -217,11 +313,6 @@ function share(url,title){
   navigator.share
     ? navigator.share({title,url})
     : navigator.clipboard.writeText(url)&&alert('Link copied');
-}
-
-/* OPEN LINK */
-function openLink(u){
-  window.open(u,'_blank');
 }
 
 /* ESC KEY */
