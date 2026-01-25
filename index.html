@@ -63,6 +63,7 @@ header{
   background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  font-weight: bold; /* Highlighted as requested */
 }
 
 /* MAIN */
@@ -266,15 +267,15 @@ footer iframe{
 
 <main id="content"></main>
 
-<!-- Auto-scroll toggle -->
-<div class="auto-scroll-controls">
-  <button id="toggleAutoScroll" class="toggle-button">Auto Scroll: ON</button>
-</div>
-
-<!-- NAVIGATION CONTROLS -->
+<!-- NAVIGATION CONTROLS (MOVED ABOVE AUTO SCROLL) -->
 <div class="nav">
   <span onclick="prevItem()">❮❮❮❮</span>
   <span onclick="nextItem()">❯❯❯❯</span>
+</div>
+
+<!-- Auto-scroll toggle -->
+<div class="auto-scroll-controls">
+  <button id="toggleAutoScroll" class="toggle-button">Auto Scroll: ON</button>
 </div>
 
 <footer>
