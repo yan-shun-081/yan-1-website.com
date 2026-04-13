@@ -351,7 +351,7 @@ async function renderNextBatch() {
     
     metadataHTML += '</div>';
 
-    container.innerHTML += `
+    container.insertAdjacentHTML('beforeend', `
       <div class="item">
         ${e ? `
         <div class="embed-wrap">
@@ -368,7 +368,7 @@ async function renderNextBatch() {
           </div>
         </div>
       </div>
-    `;
+    `);
   }
   
   displayedItems = endIndex;
@@ -432,7 +432,7 @@ async function render(items){
     
     metadataHTML += '</div>';
 
-    container.innerHTML += `
+    container.insertAdjacentHTML('beforeend', `
       <div class="item">
         ${e ? `
         <div class="embed-wrap">
@@ -449,7 +449,7 @@ async function render(items){
           </div>
         </div>
       </div>
-    `;
+    `);
   }
 }
 
