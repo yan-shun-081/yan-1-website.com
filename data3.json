@@ -1,17 +1,17 @@
 [
   {
-    "title": "Project Aurora",
-    "description": "A unified archive platform",
-    "te": "Official Site||https://example.com",
-    "channel": "Updates||https://t.me/example",
-    "note": "Experimental build"
+    "title": "About Website",
+    "Description": "✨ All-in-One Digital Platform\n\nWelcome to a modern and powerful platform designed to simplify your digital experience. This website brings together a wide range of resources, tools, and interactive features into one unified space, making it easier to access everything you need in a single place.\n\n⚡ Built for convenience and efficiency, the platform offers a smooth, fast, and user-friendly experience across all devices. Every feature is thoughtfully organized to help users save time, stay productive, and enjoy a seamless browsing journey.\n\n🌐 Whether you want to explore, learn, create, or engage, this platform provides a complete digital environment tailored to your needs.\n\n🚀 Experience simplicity, versatility, and innovation — all in one place.",
+    "A": "Privacy Policy & Terms of Use||https://yan-shun-081.github.io/privacy_policy_and_terms_of_use/",
+    "B": "Features||https://yan-shun-081.github.io/yan-1-website-features/",
+    "C": "Tutorial||https://yan-shun-081.github.io/yan-1-website-tutorial/",
+    "D": "Our Social Media Network||https://yan-shun-081.github.io/yan-1-website-social-media-network/",
+    "E": "Contact Us||https://yan-shun-081.github.io/yan-1-website-contact-us/",
+    "F": "Advertisement Details||https://yan-shun-081.github.io/yan-1-website-request-forms-page/",
+    "G": "Feedback & Rating||https://page-1-1.github.io/yan-1-website-feedback-rating-page/"
   },
   {
-    "title": "Project 1",
-    "description": "A unified archive platform",
-    "website": "Official Site||https://example.com",
-    "channel": "Updates||https://t.me/example",
-    "e": "Experimental build",
-    "tata": "hellbss"
+    "title": "About Developer",
+    "*": "Yannam Praveen||https://yan-shun-081.github.io/yannam-praveen/"
   }
 ]
