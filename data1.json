@@ -1,25 +1,49 @@
 [
   {
     "title": "WeatherClime",
-    "archive_link": "https://archive.org/details/1.-weather-clime-website"
+    "archive_link": "https://archive.org/details/WeatherClime",
+    "link1": "https://archive.org/details/WeatherClime    //            https://archive.org/details/Mapora"
     
   },
   {
     "title": "Mapora",
-    "archive_link": "https://archive.org/details/1.-mapora-website-"
+    "archive_link": "https://archive.org/details/Mapora"
   },
   {
   "title": "NewsNest",
-    "archive_link": "https://archive.org/details/NEWS-NEST-WEBSITE"
+    "archive_link": "https://archive.org/details/NewsNest"
   },
   {
     "title": "Loopix",
-    "archive_link": "https://archive.org/details/LOOPIX-WEBSITE"
+    "archive_link": "https://archive.org/details/Loopix"
   },
   {
     "title": "SoundCloud",
-    "archive_link": "https://archive.org/details/1.-sound-cloud-website"
+    "archive_link": "https://archive.org/details/soundcloud_20260412"
+  },
+  {
+    "title": "GamesVault",
+    "archive_link": "https://archive.org/details/GamesVault"
+  },
+  {
+    "title": "ConnectLu",
+    "archive_link": "https://archive.org/details/ConnectLu"
+  },
+  {
+    "title": "CricketLiveScore",
+    "archive_link": "https://archive.org/details/CricketLiveScorec"
+  },
+  {
+    "title": "ImageBackgroundRemover",
+    "archive_link": "https://archive.org/details/ImageBackgroundRemover"
+  },
+  {
+    "title": "Userverse",
+    "archive_link": "https://archive.org/details/Userverse"
   }
+  
+
+  
 ]
 
 
