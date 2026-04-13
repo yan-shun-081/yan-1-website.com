@@ -253,7 +253,9 @@ footer iframe{
 
 <!-- PAGE4 POPUP -->
 <div id="page4Overlay">
-  <div id="page4Close" class="close" onclick="closePage4()">✕</div>
+  <div id="page4Close" class="close" onclick="closePage4()">
+    <span id="countdownText">5</span>
+  </div>
   <iframe src="page4.html"></iframe>
 </div>
 
@@ -293,12 +295,27 @@ let data=[], index=0;
 let autoScrollInterval;
 let isAutoScrolling = true; // Start with auto-scroll enabled
 
-/* PAGE4 AUTO OPEN */
+/* PAGE4 AUTO OPEN AND COUNTDOWN */
 window.onload = () => {
   document.getElementById('page4Overlay').style.display='block';
   
   // Start auto-scroll when page loads
   startAutoScroll();
+  
+  // Start countdown
+  let count = 5;
+  const countdownElement = document.getElementById('countdownText');
+  countdownElement.textContent = count;
+  
+  const countdownInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownElement.textContent = count;
+    } else {
+      countdownElement.parentElement.innerHTML = '✕';
+      clearInterval(countdownInterval);
+    }
+  }, 1000);
 };
 
 /* FETCH DATA */
